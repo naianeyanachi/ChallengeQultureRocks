@@ -1,0 +1,3 @@
+[submodule "qr-challenge-api"]
+	path = qr-challenge-api
+	url = http://github.com/QultureRocks/qr-challenge-api.git
