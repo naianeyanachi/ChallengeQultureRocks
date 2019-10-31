@@ -28,9 +28,16 @@ var app = {
         request.onload = function() {
             // Begin accessing JSON data here
             var data = JSON.parse(this.response);
-            
+            var search_params = window.location.search.substring(3);
+            console.log(search_params=="");
+            if (search_params != "") {
+                var filtered = data.users.filter(function(value, index, users){
+                    return value.name.includes(search_params) || value.job_title.includes(search_params) || value.email.includes(search_params);
+                });
+                data.users = filtered;
+            }
             console.log(data);
-            
+
             var users = document.getElementById("listUsers");
             var row = users.insertRow(-1);
             row.classList.add("header");
@@ -42,17 +49,15 @@ var app = {
             cellDate.innerHTML = "Admission date"
             var cellEmail = row.insertCell(3);
             cellEmail.innerHTML = "Email"
-            
+
             data.users.forEach(function(user, index){
                 row = users.insertRow(-1);
                 if(index % 2 == 0){
                     row.classList.add("par");
-                    console.log("par");
                 } else {
                     row.classList.add("impar");
-                    console.log("impar");
                 }
-                
+
                 cellName = row.insertCell(0);
                 cellName.innerHTML = user.name;
                 cellJobTitle = row.insertCell(1);
@@ -61,7 +66,7 @@ var app = {
                 cellDate.innerHTML = user.admission_date;
                 cellEmail = row.insertCell(3);
                 cellEmail.innerHTML = user.email;
-                
+
             })
             
         }
@@ -69,15 +74,14 @@ var app = {
         // Send request
         request.send();
     },
-    printConsole: function(user, index){
-      console.log(user, index);  
-    },
     // Bind Event Listeners
     //
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
+        document.getElementById('btnSearch').addEventListener('click',this.onClickSearch);
+        document.getElementById('btnNewUser').addEventListener('click',this.onClickNewUser);
     },
     // deviceready Event Handler
     //
@@ -85,6 +89,18 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+    },
+    onClickSearch: function() {
+        console.log("onClickSearch");
+        url = window.location
+        var query_string = url.search;
+        var search_params = new URLSearchParams(query_string); 
+        search_params.set('s', document.getElementById('txtSearch').value);
+        url.search = search_params.toString();
+        var new_url = url.toString();
+    },
+    onClickNewUser: function() {
+        console.log("onClickNewUser");
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
