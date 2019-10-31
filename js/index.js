@@ -20,6 +20,57 @@ var app = {
     // Application Constructor
     initialize: function() {
         this.bindEvents();
+        var request = new XMLHttpRequest();
+
+        // Open a new connection, using the GET request on the URL endpoint
+        request.open('GET', 'https://qr-challenge.herokuapp.com/api/v1/users', true);
+
+        request.onload = function() {
+            // Begin accessing JSON data here
+            var data = JSON.parse(this.response);
+            
+            console.log(data);
+            
+            var users = document.getElementById("listUsers");
+            var row = users.insertRow(-1);
+            row.classList.add("header");
+            var cellName = row.insertCell(0);
+            cellName.innerHTML = "Name"
+            var cellJobTitle = row.insertCell(1);
+            cellJobTitle.innerHTML = "Job Title"
+            var cellDate = row.insertCell(2);
+            cellDate.innerHTML = "Admission date"
+            var cellEmail = row.insertCell(3);
+            cellEmail.innerHTML = "Email"
+            
+            data.users.forEach(function(user, index){
+                row = users.insertRow(-1);
+                if(index % 2 == 0){
+                    row.classList.add("par");
+                    console.log("par");
+                } else {
+                    row.classList.add("impar");
+                    console.log("impar");
+                }
+                
+                cellName = row.insertCell(0);
+                cellName.innerHTML = user.name;
+                cellJobTitle = row.insertCell(1);
+                cellJobTitle.innerHTML = user.job_title;
+                cellDate = row.insertCell(2);
+                cellDate.innerHTML = user.admission_date;
+                cellEmail = row.insertCell(3);
+                cellEmail.innerHTML = user.email;
+                
+            })
+            
+        }
+        
+        // Send request
+        request.send();
+    },
+    printConsole: function(user, index){
+      console.log(user, index);  
     },
     // Bind Event Listeners
     //
