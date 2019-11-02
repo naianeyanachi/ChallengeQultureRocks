@@ -20,73 +20,86 @@ var app = {
     // Application Constructor
     initialize: function() {
         this.bindEvents();
+        this.listUsers();
+    },
+    getUrlVars: function() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+            vars[key] = value;
+        });
+        return vars;
+    },
+    populateTable: function (params, data){
+        var users = document.getElementById("listUsers");
+        var row = users.insertRow(-1);
+        row.classList.add("header");
+        var cellName = row.insertCell(0);
+        cellName.innerHTML = "Name"
+        var cellJobTitle = row.insertCell(1);
+        cellJobTitle.innerHTML = "Job Title"
+        var cellDate = row.insertCell(2);
+        cellDate.innerHTML = "Admission date"
+        var cellEmail = row.insertCell(3);
+        cellEmail.innerHTML = "Email"
+    
+        data.users.forEach(function(user, index){
+            row = users.insertRow(-1);
+            if(index % 2 == 0){
+                row.classList.add("par");
+            } else {
+                row.classList.add("impar");
+            }
+
+            cellName = row.insertCell(0);
+            cellName.innerHTML = user.name;
+            cellJobTitle = row.insertCell(1);
+            cellJobTitle.innerHTML = user.job_title;
+            cellDate = row.insertCell(2);
+            cellDate.innerHTML = user.admission_date;
+            cellEmail = row.insertCell(3);
+            cellEmail.innerHTML = user.email;
+
+        });
+    },
+    getPage: function (params, data){
+        var page = params["page"];
+        if (params["page"]==null) {
+            page = 1;
+        }
+        data.users = data.users.slice(((page - 1)*10),(page*10));
+        
+        return data;
+    },
+    listUsers: function (){
+        var params = this.getUrlVars();
+        
         var request = new XMLHttpRequest();
-
-        // Open a new connection, using the GET request on the URL endpoint
         request.open('GET', 'https://qr-challenge.herokuapp.com/api/v1/users', true);
-
         request.onload = function() {
             // Begin accessing JSON data here
             var data = JSON.parse(this.response);
-            var search_params = window.location.search.substring(3);
-            console.log(search_params=="");
-            if (search_params != "") {
-                var filtered = data.users.filter(function(value, index, users){
-                    return value.name.includes(search_params) || value.job_title.includes(search_params) || value.email.includes(search_params);
-                });
-                data.users = filtered;
-            }
-            console.log(data);
-
-            var users = document.getElementById("listUsers");
-            var row = users.insertRow(-1);
-            row.classList.add("header");
-            var cellName = row.insertCell(0);
-            cellName.innerHTML = "Name"
-            var cellJobTitle = row.insertCell(1);
-            cellJobTitle.innerHTML = "Job Title"
-            var cellDate = row.insertCell(2);
-            cellDate.innerHTML = "Admission date"
-            var cellEmail = row.insertCell(3);
-            cellEmail.innerHTML = "Email"
-
-            data.users.forEach(function(user, index){
-                row = users.insertRow(-1);
-                if(index % 2 == 0){
-                    row.classList.add("par");
-                } else {
-                    row.classList.add("impar");
-                }
-
-                cellName = row.insertCell(0);
-                cellName.innerHTML = user.name;
-                cellJobTitle = row.insertCell(1);
-                cellJobTitle.innerHTML = user.job_title;
-                cellDate = row.insertCell(2);
-                cellDate.innerHTML = user.admission_date;
-                cellEmail = row.insertCell(3);
-                cellEmail.innerHTML = user.email;
-
-            })
+            data = app.filterUsers(params, data);
+            data = this.getPage(params, data);
+            app.populateTable(params, data);
             
         }
-        
-        // Send request
         request.send();
     },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
+    filterUsers: function(params, data) {
+        var search_params = params["s"];
+        if (search_params != null) {
+            var filtered = data.users.filter(function(value, index, users){
+                return value.name.includes(search_params) || value.job_title.includes(search_params) || value.email.includes(search_params);
+            });
+            data.users = filtered;
+        }
+        return data;
+    },
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         document.getElementById('btnSearch').addEventListener('click',this.onClickSearch);
         document.getElementById('btnNewUser').addEventListener('click',this.onClickNewUser);
     },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
     },
@@ -101,8 +114,8 @@ var app = {
     },
     onClickNewUser: function() {
         console.log("onClickNewUser");
+        window.location.href = "addUser.html";
     },
-    // Update DOM on a Received Event
     receivedEvent: function(id) {
         var parentElement = document.getElementById(id);
         var listeningElement = parentElement.querySelector('.listening');
