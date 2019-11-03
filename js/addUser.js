@@ -60,15 +60,22 @@ var app = {
                 "name": "potato",
                 "email": "pot@to.com",
                 "job_title": 'potato',
-                "admission_date": '2001-01-01',
+                "admission_date": 'asas',
                 "photo_url": 'https://i.pinimg.com/originals/31/2e/f9/312ef942c7d5fca10732b71a710d9c51.jpg'
             }
         }
         console.log(send);
-        
+        request.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+                console.log("User created with success");
+            } else if (this.readyState == 4){
+                console.log(this.status);
+                console.log("Unprocessable Entity");
+            }
+        };
         // Send request
         request.send(JSON.stringify(send));
-        console.log(this.response);
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
