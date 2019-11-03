@@ -22,7 +22,7 @@ var app = {
         this.bindEvents();
         this.listUsers();
     },
-    getUrlVars: function() {
+    getUrlParams: function() {
         var vars = {};
         var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
             vars[key] = value;
@@ -70,8 +70,57 @@ var app = {
         
         return data;
     },
+    createNavigation: function(params, data) {
+        //create dropdown
+        var pageSelector = document.createElement("select");
+        pageSelector.id = "pageSelector"
+        
+        pages = Math.ceil(data.users.length / 10)
+        
+        for(var i = 1; i <= pages; i++){
+            pageSelector.appendChild(new Option(i, i));
+        }
+        pageSelector.value = params["page"];
+        
+        
+        //create buttons, if necessary
+        if (params["page"] > 1){
+            var buttonFirst = document.createElement("BUTTON");
+            buttonFirst.id = "btnFirst";
+            buttonFirst.innerHTML = "<<";
+            
+            var buttonBack = document.createElement("button");
+            buttonBack.id = "btnBack";
+            buttonBack.innerHTML = "<";
+            
+            document.getElementById("navigation").appendChild(buttonFirst);
+            document.getElementById("navigation").appendChild(buttonBack);
+            document.getElementById('btnFirst').addEventListener('click',function() {app.changePage(1)});
+            document.getElementById('btnBack').addEventListener('click',function() {app.changePage(parseInt(params["page"]) - 1)});
+        }
+        
+        document.getElementById("navigation").appendChild(pageSelector);
+        
+        if (params["page"] < pages){
+            var buttonLast = document.createElement("BUTTON");
+            buttonLast.id = "btnLast";
+            buttonLast.innerHTML = ">>";
+            
+            var buttonForward = document.createElement("BUTTON");
+            buttonForward.id = "btnForward";
+            buttonForward.innerHTML = ">";
+            
+            document.getElementById("navigation").appendChild(buttonForward);
+            document.getElementById("navigation").appendChild(buttonLast);
+            document.getElementById('btnLast').addEventListener('click',function() {app.changePage(pages)});
+            document.getElementById('btnForward').addEventListener('click', function() {app.changePage(parseInt(params["page"]) + 1)}, false);
+        }
+        
+        //create event listeners
+        document.getElementById('pageSelector').addEventListener('change',this.onChange);
+    },
     listUsers: function (){
-        var params = this.getUrlVars();
+        var params = this.getUrlParams();
         
         var request = new XMLHttpRequest();
         request.open('GET', 'https://qr-challenge.herokuapp.com/api/v1/users', true);
@@ -79,7 +128,8 @@ var app = {
             // Begin accessing JSON data here
             var data = JSON.parse(this.response);
             data = app.filterUsers(params, data);
-            data = this.getPage(params, data);
+            app.createNavigation(params, data);
+            data = app.getPage(params, data);
             app.populateTable(params, data);
             
         }
@@ -97,23 +147,30 @@ var app = {
     },
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
-        document.getElementById('btnSearch').addEventListener('click',this.onClickSearch);
-        document.getElementById('btnNewUser').addEventListener('click',this.onClickNewUser);
+        document.getElementById('btnSearch').addEventListener('click', this.onClickSearch);
+        document.getElementById('btnNewUser').addEventListener('click', this.onClickNewUser);
+    },
+    changePage: function(page) {
+        var query_string = window.location.search;
+        var page_params = new URLSearchParams(query_string); 
+        page_params.set('page', page);
+        window.location.search = page_params.toString();
+    },
+    onChange: function() {
+        var newPage = document.getElementById('pageSelector').value;
+        app.changePage(newPage);
+        
     },
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
     },
     onClickSearch: function() {
-        console.log("onClickSearch");
-        url = window.location
-        var query_string = url.search;
+        var query_string = window.location.search;
         var search_params = new URLSearchParams(query_string); 
         search_params.set('s', document.getElementById('txtSearch').value);
-        url.search = search_params.toString();
-        var new_url = url.toString();
+        window.location.search = search_params.toString();
     },
     onClickNewUser: function() {
-        console.log("onClickNewUser");
         window.location.href = "addUser.html";
     },
     receivedEvent: function(id) {
