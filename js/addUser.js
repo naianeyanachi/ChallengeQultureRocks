@@ -20,31 +20,20 @@ var app = {
     // Application Constructor
     initialize: function() {
         this.bindEvents();
-        
+        createNavComponent();
     },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         document.getElementById('btnNewUser').addEventListener('click',this.onClickNewUser);
     },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
     onClickNewUser: function() {
-        console.log("onClickNewUser");
         var request = new XMLHttpRequest();
 
-        // Open a new connection, using the POST request on the URL endpoint
+        
         request.open('POST', 'https://qr-challenge.herokuapp.com/api/v1/users', true);
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         
+        //get entry
         var send = {
             "user": {
                 "name": document.getElementById('txtName').value,
@@ -55,6 +44,7 @@ var app = {
             }
         }
         
+        //default send just for testing
         send = {
             "user": {
                 "name": "potato",
@@ -64,28 +54,17 @@ var app = {
                 "photo_url": 'https://i.pinimg.com/originals/31/2e/f9/312ef942c7d5fca10732b71a710d9c51.jpg'
             }
         }
-        console.log(send);
+        
+        //check if user was created in database
         request.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText);
-                console.log("User created with success");
+                alert("User created with success");
             } else if (this.readyState == 4){
-                console.log(this.status);
-                console.log("Unprocessable Entity");
+                alert("Error " + this.status + ": " + this.statusText);
             }
         };
-        // Send request
+        
+        //send entry
         request.send(JSON.stringify(send));
-    },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
     }
 };

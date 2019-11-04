@@ -20,19 +20,26 @@ var app = {
     // Application Constructor
     initialize: function() {
         this.bindEvents();
+        createNavComponent();
         this.listUsers();
     },
     getUrlParams: function() {
+        //separate params from url
         var vars = {};
         var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
             vars[key] = value;
         });
+        if (vars["page"]==null) {
+            vars["page"] = 1;
+        }
         return vars;
     },
     populateTable: function (params, data){
         var users = document.getElementById("listUsers");
         var header = users.createTHead();
         var row = header.insertRow(-1);
+        
+        //header cells
         row.classList.add("header");
         var cellName = document.createElement('th');
         cellName.innerHTML = "Name"
@@ -52,7 +59,7 @@ var app = {
         row.appendChild(cellDate);
         row.appendChild(cellEmail);
         
-        
+        //body cells
         var body = users.createTBody();
         data.users.forEach(function(user, index){
             var newRow = body.insertRow();
@@ -74,15 +81,15 @@ var app = {
         });
     },
     getPage: function (params, data){
+        //get users from current page
         var page = params["page"];
-        if (params["page"]==null) {
-            page = 1;
-        }
         data.users = data.users.slice(((page - 1)*10),(page*10));
         
         return data;
     },
     createNavigation: function(params, data) {
+        //create navigation interface
+        
         //create dropdown
         var pageSelector = document.createElement("select");
         pageSelector.id = "pageSelector"
@@ -144,12 +151,13 @@ var app = {
         
     },
     listUsers: function (){
+        //main function
+        //display users on the table
         var params = this.getUrlParams();
         
         var request = new XMLHttpRequest();
         request.open('GET', 'https://qr-challenge.herokuapp.com/api/v1/users', true);
         request.onload = function() {
-            // Begin accessing JSON data here
             var data = JSON.parse(this.response);
             data = app.filterUsers(params, data);
             app.createNavigation(params, data);
@@ -160,6 +168,9 @@ var app = {
         request.send();
     },
     filterUsers: function(params, data) {
+        //filter users from search query
+        //users are filtered by name, email and job title
+        
         var search_params = params["s"];
         if (search_params != null) {
             var filtered = data.users.filter(function(value, index, users){
@@ -175,12 +186,14 @@ var app = {
         document.getElementById('btnNewUser').addEventListener('click', this.onClickNewUser);
     },
     changePage: function(page) {
+        //reload to set users from another page
         var query_string = window.location.search;
         var page_params = new URLSearchParams(query_string); 
         page_params.set('page', page);
         window.location.search = page_params.toString();
     },
     onChange: function() {
+        //set the users from selected page
         var newPage = document.getElementById('pageSelector').value;
         app.changePage(newPage);
         
@@ -196,15 +209,5 @@ var app = {
     },
     onClickNewUser: function() {
         window.location.href = "addUser.html";
-    },
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
     }
 };
