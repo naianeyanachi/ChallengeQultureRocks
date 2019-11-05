@@ -43,17 +43,6 @@ var app = {
             }
         }
         
-        //default send just for testing
-        send = {
-            "user": {
-                "name": "potato",
-                "email": "pot@to.com",
-                "job_title": 'potato',
-                "admission_date": 'asas',
-                "photo_url": 'https://i.pinimg.com/originals/31/2e/f9/312ef942c7d5fca10732b71a710d9c51.jpg'
-            }
-        }
-        
         //check if user was created in database
         request.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
