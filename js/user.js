@@ -24,6 +24,7 @@ var app = {
         this.loadUser();
     },
     bindEvents: function() {
+        //ne events to bind
     },
     getUrlParams: function() {
         //separate params from url
@@ -38,6 +39,7 @@ var app = {
         var commentsRequest = new XMLHttpRequest();
         var params = this.getUrlParams();
         
+        //load user info
         userRequest.open('GET', 'https://qr-challenge.herokuapp.com/api/v1/users/' + params["id"], true);
         userRequest.onload = function() {
             var data = JSON.parse(this.response);
@@ -46,6 +48,7 @@ var app = {
         }
         userRequest.send();
         
+        //load comments if any
         commentsRequest.open('GET', 'https://qr-challenge.herokuapp.com/api/v1/users/'+params["id"]+'/comments', true);
         commentsRequest.onload = function() {
             var data = JSON.parse(this.response);
@@ -54,6 +57,7 @@ var app = {
         commentsRequest.send();
     },
     showUser: function(data) {
+        //display user info
         document.getElementById("txtName").innerHTML = data.user.name;
         document.getElementById("txtAdmissionDate").innerHTML = data.user.admission_date;
         document.getElementById("txtJobTitle").innerHTML = data.user.job_title;
@@ -61,6 +65,7 @@ var app = {
         document.getElementById("img").src = data.user.photo_url;
     },
     showComments: function(data) {
+        //display comments if any
         var commentSection = document.getElementById("comments");
         var ul = document.createElement("ul");
         ul.classList.add("list-group");
