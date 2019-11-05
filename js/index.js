@@ -35,6 +35,8 @@ var app = {
         return vars;
     },
     populateTable: function (params, data){
+        //insert data to table
+        
         var users = document.getElementById("listUsers");
         var header = users.createTHead();
         var row = header.insertRow(-1);
@@ -63,12 +65,8 @@ var app = {
         var body = users.createTBody();
         data.users.forEach(function(user, index){
             var newRow = body.insertRow();
-            if(index % 2 == 0){
-                newRow.classList.add("par");
-            } else {
-                newRow.classList.add("impar");
-            }
-
+            newRow.id = user.id;
+            
             cellName = newRow.insertCell(0);
             cellName.innerHTML = user.name;
             cellJobTitle = newRow.insertCell(1);
@@ -182,8 +180,8 @@ var app = {
     },
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
-        document.getElementById('btnSearch').addEventListener('click', this.onClickSearch);
-        document.getElementById('btnNewUser').addEventListener('click', this.onClickNewUser);
+        document.getElementById('btnSearch').addEventListener('click', this.search);
+        document.getElementById('txtSearch').addEventListener('keypress', this.onKeyPress);
     },
     changePage: function(page) {
         //reload to set users from another page
@@ -192,20 +190,26 @@ var app = {
         page_params.set('page', page);
         window.location.search = page_params.toString();
     },
+    search: function() {
+        var query_string = window.location.search;
+        var search_params = new URLSearchParams(query_string); 
+        search_params.set('s', document.getElementById('txtSearch').value);
+        search_params.set('page', 1);
+        window.location.search = search_params.toString();
+    },
     onChange: function() {
         //set the users from selected page
         var newPage = document.getElementById('pageSelector').value;
         app.changePage(newPage);
         
     },
-    onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
     onClickSearch: function() {
-        var query_string = window.location.search;
-        var search_params = new URLSearchParams(query_string); 
-        search_params.set('s', document.getElementById('txtSearch').value);
-        window.location.search = search_params.toString();
+        app.search();
+    },
+    onKeyPress: function(e) {
+      if (e.keyCode == 13) {
+          app.search();
+      }  
     },
     onClickNewUser: function() {
         window.location.href = "addUser.html";

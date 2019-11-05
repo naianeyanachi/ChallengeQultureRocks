@@ -9,7 +9,7 @@ var createNavComponent = function (){
     brand.href = "index.html";
     brand.classList.add("navbar-brand");
     brand.classList.add("nav-link");
-    brand.innerHTML = "RH";
+    brand.innerHTML = "Qulture.Rocks";
     
     nav.appendChild(brand);
     
@@ -28,6 +28,6 @@ var createNavComponent = function (){
     nav.appendChild(link1);
     nav.appendChild(link2);
     
-    document.getElementById("divNav").appendChild(nav   );
+    document.getElementById("divNav").appendChild(nav);
     
 }
