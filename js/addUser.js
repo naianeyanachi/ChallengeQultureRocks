@@ -23,7 +23,6 @@ var app = {
         createNavComponent();
     },
     bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
         document.getElementById('btnNewUser').addEventListener('click',this.onClickNewUser);
     },
     onClickNewUser: function() {

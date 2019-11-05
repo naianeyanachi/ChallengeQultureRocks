@@ -65,7 +65,7 @@ var app = {
         var body = users.createTBody();
         data.users.forEach(function(user, index){
             var newRow = body.insertRow();
-            newRow.id = user.id;
+            newRow.id = user.id
             
             cellName = newRow.insertCell(0);
             cellName.innerHTML = user.name;
@@ -75,7 +75,8 @@ var app = {
             cellDate.innerHTML = user.admission_date;
             cellEmail = newRow.insertCell(3);
             cellEmail.innerHTML = user.email;
-
+            
+            document.getElementById(user.id).onclick = app.onClickRow;
         });
     },
     getPage: function (params, data){
@@ -179,7 +180,6 @@ var app = {
         return data;
     },
     bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
         document.getElementById('btnSearch').addEventListener('click', this.search);
         document.getElementById('txtSearch').addEventListener('keypress', this.onKeyPress);
     },
@@ -196,6 +196,13 @@ var app = {
         search_params.set('s', document.getElementById('txtSearch').value);
         search_params.set('page', 1);
         window.location.search = search_params.toString();
+    },
+    onClickRow: function(e) {
+        console.log(e.path[1].id);
+        
+        id = e.path[1].id;
+        
+        window.location = "user.html?id=" + id;
     },
     onChange: function() {
         //set the users from selected page

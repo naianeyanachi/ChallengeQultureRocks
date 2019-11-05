@@ -83,6 +83,10 @@ div.navigation {
     text-align: center;
 }
 
+img {
+    margin-bottom: 10px;
+}
+
 @keyframes fade {
     from { opacity: 1.0; }
     50% { opacity: 0.4; }
